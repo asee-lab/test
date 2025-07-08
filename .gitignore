@@ -1,0 +1,14 @@
+bin/
+obj/
+*.user
+*.suo
+*.log
+.vscode/
+.idea/
+.env.local
+.env.production
+
+# Common mistake: not ignoring secrets
+# These should be ignored but are not:
+# appsettings.Development.json
+# appsettings.Production.json

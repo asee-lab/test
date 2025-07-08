@@ -10,7 +10,9 @@ namespace app.Controllers
     {
         [HttpGet("/")]
         public IActionResult Index(string userInput)
+
         {
+
             // SQL Injection
             var conn = new SqlConnection("Data Source=(local);Initial Catalog=TestDb;Integrated Security=True");
             var cmd = new SqlCommand("SELECT * FROM Users WHERE Name = '" + userInput + "'", conn);
@@ -42,6 +44,20 @@ namespace app.Controllers
             string content = System.IO.File.ReadAllText("/var/app/uploads/" + fileName);
 
             return Content("Processed input: " + userInput);
+        }
+        [HttpGet("/secrets")]
+        public IActionResult GetSecrets()
+        {
+            // Fake hardcoded secrets to trigger GitHub Secret Scanning
+
+            string githubToken = "ghp_FAKEGitHubTokenForTest1234567890";
+            string awsAccessKey = "AKIAIOSFODNN7EXAMPLE";
+            string awsSecretKey = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY";
+            string sendGridApiKey = "SG.DemoSecretKeyTriggerScan.123456";
+            string slackToken = "xoxb-111111111111-222222222222-EXAMPLESECRETKEY";
+            string twilioAuthToken = "1234567890abcdef1234567890abcdef";
+
+            return Content("Secrets are here (for scanning test).");
         }
     }
 }

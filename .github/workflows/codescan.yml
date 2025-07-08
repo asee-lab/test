@@ -32,6 +32,11 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4 # Checkout the repository code
 
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'  # Use the version your project targets
+
     # Initialize the CodeQL analysis environment.
     # This step prepares the CodeQL tools and sets up the database for the specified language.
     - name: Initialize CodeQL
@@ -51,15 +56,15 @@ jobs:
     # `dotnet build` or `dotnet publish` commands.
     # If `autobuild` fails or doesn't capture all code, replace it with your
     # application's specific build steps.
-    - name: Autobuild .NET application
-      uses: github/codeql-action/autobuild@v3
+    # - name: Autobuild .NET application
+    #   uses: github/codeql-action/autobuild@v3
       # Example of a custom build step if autobuild doesn't work:
-      # - name: Custom .NET Build
-      #   run: |
-      #     dotnet restore
-      #     dotnet build --configuration Release --no-restore
-      #     # Or if you need to publish:
-      #     # dotnet publish --configuration Release --no-build
+    - name: Custom .NET Build
+      run: |
+        dotnet restore
+        dotnet build --configuration Release --no-restore
+        # Or if you need to publish:
+        # dotnet publish --configuration Release --no-build
 
     # Perform the CodeQL analysis on the built code.
     # This step runs the CodeQL queries against the generated database.

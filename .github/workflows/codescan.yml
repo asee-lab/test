@@ -59,12 +59,12 @@ jobs:
     # - name: Autobuild .NET application
     #   uses: github/codeql-action/autobuild@v3
       # Example of a custom build step if autobuild doesn't work:
-    - name: Custom .NET Build
-      run: |
-        dotnet restore
-        dotnet build --configuration Release --no-restore
-        # Or if you need to publish:
-        # dotnet publish --configuration Release --no-build
+    # - name: Custom .NET Build
+    #   run: |
+    #     dotnet restore
+    #     dotnet build --configuration Release --no-restore
+    #     # Or if you need to publish:
+    #     # dotnet publish --configuration Release --no-build
 
     # Perform the CodeQL analysis on the built code.
     # This step runs the CodeQL queries against the generated database.

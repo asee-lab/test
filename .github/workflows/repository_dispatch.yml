@@ -1,0 +1,18 @@
+name: Repository Dispatch Listener
+
+"on":
+  repository_dispatch: # Trigger workflows on the default branch of the repository (e.g., main or master)
+    types: [dev.cdevents.taskrun.started] # This must match the 'event_type' in your curl request
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Print received message
+      run: |
+        echo "Received message from client_payload: ${{ github.event.client_payload.message }}"
+        echo "Full client_payload: ${{ toJSON(github.event.client_payload) }}"

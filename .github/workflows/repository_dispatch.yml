@@ -1,6 +1,6 @@
 name: Repository Dispatch Listener
 
-on:
+"on":
   repository_dispatch: # Trigger workflows on the default branch of the repository (e.g., main or master)
     types: [dev.cdevents.taskrun.started] # This must match the 'event_type' in your curl request
 

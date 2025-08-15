@@ -37,12 +37,24 @@ jobs:
       with:
         dotnet-version: '8.0.x'  # Use the version your project targets
 
+      # Restore cached CodeQL database for incremental analysis
+
+    - name: Restore CodeQL database cache
+      uses: actions/cache@v4
+      with:
+        path: ./.codeql-db
+        key: codeql-${{ matrix.language }}-${{ github.ref }}-${{ github.sha }}
+        restore-keys: |
+          codeql-${{ matrix.language }}-${{ github.ref }}-
+          codeql-${{ matrix.language }}-
+
     # Initialize the CodeQL analysis environment.
     # This step prepares the CodeQL tools and sets up the database for the specified language.
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v3
       with:
         languages: ${{ matrix.language }}
+        db-location: ./.codeql-db
         # If you have multiple .NET projects or a complex solution,
         # you might need to specify the path to your solution file (.sln)
         # or project file (.csproj) using the 'source-location' parameter,
@@ -74,3 +86,11 @@ jobs:
       # which can help in filtering and organizing alerts in GitHub.
       # with:
       #   category: "/language:${{matrix.language}}"
+
+      # Save updated database to cache for future runs
+    - name: Save CodeQL database cache
+      if: always()
+      uses: actions/cache@v4
+      with:
+        path: ./.codeql-db
+        key: codeql-${{ matrix.language }}-${{ github.ref }}-${{ github.sha }}

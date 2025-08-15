@@ -1,0 +1,95 @@
+# This workflow uses GitHub Advanced Security's CodeQL to perform Static Application Security Testing (SAST)
+# for a .NET application. It will scan your C# code for security vulnerabilities and coding errors.
+
+name: CodeQL .NET SAST
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main" ] # Trigger on pushes to the main branch
+  pull_request:
+    branches: [ "main" ] # Trigger on pull requests targeting the main branch
+
+jobs:
+  analyze:
+    name: Analyze
+    runs-on: ubuntu-latest # Specify the runner environment. 'windows-latest' or 'macos-latest' could also be used.
+
+    permissions:
+      actions: read       # Allow the workflow to read its own workflow file
+      contents: read      # Allow the workflow to read the repository's contents
+      security-events: write # Allow the workflow to write security alerts to GitHub
+
+    strategy:
+      # Set fail-fast to false to ensure that all analysis steps run,
+      # even if one language analysis fails.
+      fail-fast: false
+      matrix:
+        # Define the language(s) to scan. For .NET, we specify 'csharp'.
+        language: [ 'csharp' ]
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4 # Checkout the repository code
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'  # Use the version your project targets
+
+      # Restore cached CodeQL database for incremental analysis
+    - name: Restore CodeQL database cache
+      uses: actions/cache@v4
+      with:
+        path: ./.codeql-db
+        key: codeql-${{ matrix.language }}-${{ github.ref }}-${{ github.sha }}
+        restore-keys: |
+          codeql-${{ matrix.language }}-${{ github.ref }}-
+          codeql-${{ matrix.language }}-
+
+    # Initialize the CodeQL analysis environment.
+    # This step prepares the CodeQL tools and sets up the database for the specified language.
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v3
+      with:
+        languages: ${{ matrix.language }}
+        db-location: ./.codeql-db
+        # If you have multiple .NET projects or a complex solution,
+        # you might need to specify the path to your solution file (.sln)
+        # or project file (.csproj) using the 'source-location' parameter,
+        # or ensure your build command below correctly compiles everything.
+        # For example:
+        # source-location: MySolution.sln
+
+    # Autobuild attempts to build any compiled languages (like C#).
+    # For .NET applications, `autobuild` often works, but for complex projects
+    # or specific build requirements, you might need to replace this with custom
+    # `dotnet build` or `dotnet publish` commands.
+    # If `autobuild` fails or doesn't capture all code, replace it with your
+    # application's specific build steps.
+    # - name: Autobuild .NET application
+    #   uses: github/codeql-action/autobuild@v3
+      # Example of a custom build step if autobuild doesn't work:
+    - name: Custom .NET Build
+      run: |
+        dotnet restore
+        dotnet build --configuration Release --no-restore
+        # Or if you need to publish:
+        # dotnet publish --configuration Release --no-build
+
+    # Perform the CodeQL analysis on the built code.
+    # This step runs the CodeQL queries against the generated database.
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v3
+      # Optionally, you can specify a category for the analysis results,
+      # which can help in filtering and organizing alerts in GitHub.
+      # with:
+      #   category: "/language:${{matrix.language}}"
+
+      # Save updated database to cache for future runs
+    - name: Save CodeQL database cache
+      if: always()
+      uses: actions/cache@v4
+      with:
+        path: ./.codeql-db
+        key: codeql-${{ matrix.language }}-${{ github.ref }}-${{ github.sha }}

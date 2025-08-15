@@ -42,11 +42,9 @@ jobs:
       uses: actions/cache@v4
       with:
         path: ./.codeql-db
-        key: codeql-${{ matrix.language }}-${{ github.ref }}-${{ github.sha }}
+        key: codeql-${{ matrix.language }}-${{ github.event.repository.default_branch }}
         restore-keys: |
-          codeql-${{ matrix.language }}-${{ github.ref }}-
           codeql-${{ matrix.language }}-
-
     # Initialize the CodeQL analysis environment.
     # This step prepares the CodeQL tools and sets up the database for the specified language.
     - name: Initialize CodeQL
@@ -92,4 +90,4 @@ jobs:
       uses: actions/cache@v4
       with:
         path: ./.codeql-db
-        key: codeql-${{ matrix.language }}-${{ github.ref }}-${{ github.sha }}
+        key: codeql-${{ matrix.language }}-${{ github.event.repository.default_branch }}

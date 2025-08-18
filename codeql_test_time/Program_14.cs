@@ -13,7 +13,7 @@ using System.IO; // for file handling
 
 namespace VulnerableApp
 {
-    public class Program
+    public class Program_14
     {
         public static void Main(string[] args)
         {

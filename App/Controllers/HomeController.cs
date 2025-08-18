@@ -160,7 +160,7 @@ namespace app.Controllers
         }
 
         [HttpGet("/timing1")]
-        public IActionResult TimingAttack(string password)
+        public IActionResult TimingAttack1(string password)
         {
             // 🚨 Added Vulnerability: Insecure Timing Leak
             string correctPassword = "SuperSecret123";

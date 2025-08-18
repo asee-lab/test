@@ -23,8 +23,9 @@ jobs:
       # even if one language analysis fails.
       fail-fast: false
       matrix:
+        include:
+          - language: csharp # Define the language to scan. For .NET, we specify 'csharp'.
         # Define the language(s) to scan. For .NET, we specify 'csharp'.
-        language: ['csharp']
 
     steps:
       - name: Checkout repository

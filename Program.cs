@@ -6,6 +6,10 @@ using System.Data.SqlClient; // for insecure SQL
 using System.IO; // for insecure file handling
 using System.Net; // for insecure HTTP calls
 using System.Text; // for insecure encoding
+using System.Diagnostics; // for Process
+using System.IO; // for file handling
+
+
 
 namespace VulnerableApp
 {
@@ -41,6 +45,21 @@ namespace VulnerableApp
             var plaintext = "super secret";
             var bytes = Encoding.ASCII.GetBytes(plaintext); // Weak encoding (ASCII)
             Console.WriteLine($"Plain bytes: {BitConverter.ToString(bytes)}");
+            
+            // 🚨 Vulnerability #6: Command Injection
+            var fileName = Environment.GetEnvironmentVariable("FILENAME") ?? "test.txt";
+            // Passing untrusted input directly to a shell command
+            var proc = Process.Start("bash", $"-c \"cat {fileName}\"");
+            proc.WaitForExit();
+
+            // 🚨 Vulnerability #7: Path Traversal
+            var filePath = Environment.GetEnvironmentVariable("FILE_PATH") ?? "data.txt";
+            // Attacker could set FILE_PATH to something like "../../etc/passwd"
+            if (File.Exists(filePath))
+            {
+                var contents = File.ReadAllText(filePath);
+                Console.WriteLine($"File contents: {contents}");
+            }
 
             app.Run();
         }

@@ -61,6 +61,20 @@ namespace VulnerableApp
                 Console.WriteLine($"File contents: {contents}");
             }
 
+            // 🚨 Vulnerability #8: SQL Injection with LIKE operator
+            var searchTerm = Environment.GetEnvironmentVariable("SEARCH_TERM") ?? "admin";
+            var query = $"SELECT * FROM Users WHERE Name LIKE '%{searchTerm}%'";
+            using (var conn2 = new SqlConnection(connString))
+            {
+                conn2.Open();
+                using var cmd2 = new SqlCommand(query, conn2);
+                using var reader2 = cmd2.ExecuteReader();
+                while (reader2.Read())
+                {
+                    Console.WriteLine($"Found user: {reader2["Name"]}");
+                }
+            }
+
             app.Run();
         }
     }

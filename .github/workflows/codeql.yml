@@ -61,6 +61,7 @@ jobs:
       # Example of a custom build step if autobuild doesn't work:
       - name: Custom .NET Build
         run: |
+          cd app1
           dotnet restore
           dotnet build --configuration Release --no-restore
           # Or if you need to publish:

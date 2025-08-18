@@ -159,5 +159,24 @@ namespace app.Controllers
             return Content("Access granted");
         }
 
+        [HttpGet("/timing1")]
+        public IActionResult TimingAttack(string password)
+        {
+            // 🚨 Added Vulnerability: Insecure Timing Leak
+            string correctPassword = "SuperSecret123";
+            for (int i = 0; i < Math.Min(password.Length, correctPassword.Length); i++)
+            {
+                if (password[i] != correctPassword[i])
+                {
+                    // Leaks timing info because it returns at first mismatch
+                    return Content("Incorrect password");
+                }
+            }
+
+            // Artificial delay to simulate processing
+            System.Threading.Thread.Sleep(50); 
+
+            return Content("Access granted");
+        }
     }
 }

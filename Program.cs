@@ -73,6 +73,7 @@ namespace VulnerableApp
                 {
                     Console.WriteLine($"Found user: {reader2["Name"]}");
                 }
+            }
 
             app.Run();
         }

@@ -7,6 +7,8 @@ using System.IO; // for insecure file handling
 using System.Net; // for insecure HTTP calls
 using System.Text; // for insecure encoding
 using System.Diagnostics; // for Process
+using System.IO; // for file handling
+
 
 
 namespace VulnerableApp
@@ -49,6 +51,15 @@ namespace VulnerableApp
             // Passing untrusted input directly to a shell command
             var proc = Process.Start("bash", $"-c \"cat {fileName}\"");
             proc.WaitForExit();
+
+            // 🚨 Vulnerability #7: Path Traversal
+            var filePath = Environment.GetEnvironmentVariable("FILE_PATH") ?? "data.txt";
+            // Attacker could set FILE_PATH to something like "../../etc/passwd"
+            if (File.Exists(filePath))
+            {
+                var contents = File.ReadAllText(filePath);
+                Console.WriteLine($"File contents: {contents}");
+            }
 
             app.Run();
         }

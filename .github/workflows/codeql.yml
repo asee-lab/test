@@ -72,5 +72,5 @@ jobs:
         uses: github/codeql-action/analyze@v3
         # Optionally, you can specify a category for the analysis results,
         # which can help in filtering and organizing alerts in GitHub.
-        # with:
-        #   category: "/language:${{matrix.language}}"
+        with:
+          category: "/language:${{matrix.language}}"

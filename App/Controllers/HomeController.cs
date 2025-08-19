@@ -219,12 +219,26 @@ namespace app.Controllers
             return Content("Access granted");
         }
 
-        // ⚠️ Insecure: Hardcoded DB connection
-        const connection = mysql.createConnection({
-        host: 'localhost',
-        user: 'root',
-        password: 'password',
-        database: 'testdb'
-        });
+        // 🚨 SQL Injection Vulnerability inside controller
+        [HttpGet("/user")]
+        public IActionResult GetUser(string id)
+        {
+            // Insecure: concatenating user input directly into the SQL query
+            var connString = "Server=localhost;Database=TestDb;Trusted_Connection=True;";
+            using var connection = new SqlConnection(connString);
+            connection.Open();
+
+            var query = $"SELECT * FROM Users WHERE Id = {id}"; // ❌ Vulnerable
+            var command = new SqlCommand(query, connection);
+            var reader = command.ExecuteReader();
+
+            var users = new List<string>();
+            while (reader.Read())
+            {
+                users.Add(reader["Name"].ToString());
+            }
+
+            return Ok(users);
+        }
     }
 }

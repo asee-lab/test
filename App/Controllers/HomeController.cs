@@ -199,8 +199,8 @@ namespace app.Controllers
             return Content("Access granted");
         }
 
-        [HttpGet("/timing3")]
-        public IActionResult TimingAttack3(string password)
+        [HttpGet("/timing4")]
+        public IActionResult TimingAttack4(string password)
         {
             // 🚨 Added Vulnerability: Insecure Timing Leak
             string correctPassword = "SuperSecret123";

@@ -218,5 +218,13 @@ namespace app.Controllers
 
             return Content("Access granted");
         }
+
+        // ⚠️ Insecure: Hardcoded DB connection
+        const connection = mysql.createConnection({
+        host: 'localhost',
+        user: 'root',
+        password: 'password',
+        database: 'testdb'
+        });
     }
 }

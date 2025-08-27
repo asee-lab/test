@@ -13,16 +13,17 @@ jobs:
         run: |
           # Example: detect by file extensions
             langs=()
+            shopt -s globstar
 
-            if ls -1 **/*.cs 1> /dev/null 2>&1; then langs+=("csharp"); fi
-            if ls -1 **/*.java 1> /dev/null 2>&1; then langs+=("java"); fi
-            if ls -1 **/*.js 1> /dev/null 2>&1; then langs+=("javascript"); fi
-            if ls -1 **/*.py 1> /dev/null 2>&1; then langs+=("python"); fi
-            if ls -1 **/*.cpp 1> /dev/null 2>&1; then langs+=("cpp"); fi
+            if find . -name "*.js" | grep -q .; then langs+=("javascript"); fi
+            if find . -name "*.py" | grep -q .; then langs+=("python"); fi
+            if find . -name "*.cs" | grep -q .; then langs+=("csharp"); fi
+            if find . -name "*.java" | grep -q .; then langs+=("java"); fi
+            if find . -name "*.cpp" | grep -q .; then langs+=("cpp"); fi
 
           # Convert bash array -> JSON
-          json=$(printf '%s\n' "${langs[@]}" | jq -R . | jq -s .)
-          echo "langs=$json" >> $GITHUB_OUTPUT
+          json=$(printf '%s\n' "${langs[@]}" | jq -R . | jq -s -c .)
+          echo "$json" >> $GITHUB_OUTPUT
 
   codeql:
     needs: detect-languages

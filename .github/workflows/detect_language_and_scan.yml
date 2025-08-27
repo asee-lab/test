@@ -1,0 +1,36 @@
+name: "Advanced CodeQL"
+
+on: 
+  workflow_dispatch:
+jobs:
+  detect-languages:
+    runs-on: ubuntu-latest
+    outputs:
+      langs: ${{ steps.setlangs.outputs.langs }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: setlangs
+        run: |
+          # Example: detect by file extensions
+          langs=""
+          if ls *.cs 1> /dev/null 2>&1; then langs="$langs csharp"; fi
+          if ls *.java 1> /dev/null 2>&1; then langs="$langs java"; fi
+          if ls *.js 1> /dev/null 2>&1; then langs="$langs javascript"; fi
+          echo "langs=$langs" >> $GITHUB_OUTPUT
+
+  codeql:
+    needs: detect-languages
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        language: ${{ fromJSON('["' + join(needs.detect-languages.outputs.langs, '","') + '"]') }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+      - uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:${{ matrix.language }}"
+

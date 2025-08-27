@@ -1,4 +1,4 @@
-name: "Advanced CodeQL"
+name: "Detect language and run scan"
 
 on: 
   workflow_dispatch:

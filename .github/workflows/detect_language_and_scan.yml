@@ -12,18 +12,24 @@ jobs:
       - id: setlangs
         run: |
           # Example: detect by file extensions
-          langs=""
-          if ls *.cs 1> /dev/null 2>&1; then langs="$langs csharp"; fi
-          if ls *.java 1> /dev/null 2>&1; then langs="$langs java"; fi
-          if ls *.js 1> /dev/null 2>&1; then langs="$langs javascript"; fi
-          echo "langs=$langs" >> $GITHUB_OUTPUT
+            langs=()
+
+            if ls -1 **/*.cs 1> /dev/null 2>&1; then langs+=("csharp"); fi
+            if ls -1 **/*.java 1> /dev/null 2>&1; then langs+=("java"); fi
+            if ls -1 **/*.js 1> /dev/null 2>&1; then langs+=("javascript"); fi
+            if ls -1 **/*.py 1> /dev/null 2>&1; then langs+=("python"); fi
+            if ls -1 **/*.cpp 1> /dev/null 2>&1; then langs+=("cpp"); fi
+
+          # Convert bash array -> JSON
+          json=$(printf '%s\n' "${langs[@]}" | jq -R . | jq -s .)
+          echo "langs=$json" >> $GITHUB_OUTPUT
 
   codeql:
     needs: detect-languages
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        language: ${{ fromJSON('["' + join(needs.detect-languages.outputs.langs, '","') + '"]') }}
+        language: ${{ fromJSON(needs.detect-languages.outputs.langs) }}
     steps:
       - uses: actions/checkout@v4
       - name: Initialize CodeQL
@@ -31,6 +37,3 @@ jobs:
         with:
           languages: ${{ matrix.language }}
       - uses: github/codeql-action/analyze@v3
-        with:
-          category: "/language:${{ matrix.language }}"
-

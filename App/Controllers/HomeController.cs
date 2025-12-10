@@ -199,5 +199,46 @@ namespace app.Controllers
             return Content("Access granted");
         }
 
+        [HttpGet("/timing4")]
+        public IActionResult TimingAttack4(string password)
+        {
+            // 🚨 Added Vulnerability: Insecure Timing Leak
+            string correctPassword = "SuperSecret123";
+            for (int i = 0; i < Math.Min(password.Length, correctPassword.Length); i++)
+            {
+                if (password[i] != correctPassword[i])
+                {
+                    // Leaks timing info because it returns at first mismatch
+                    return Content("Incorrect password");
+                }
+            }
+
+            // Artificial delay to simulate processing
+            System.Threading.Thread.Sleep(50); 
+
+            return Content("Access granted");
+        }
+
+        // 🚨 SQL Injection Vulnerability inside controller
+        [HttpGet("/user")]
+        public IActionResult GetUser(string id)
+        {
+            // Insecure: concatenating user input directly into the SQL query
+            var connString = "Server=localhost;Database=TestDb;Trusted_Connection=True;";
+            using var connection = new SqlConnection(connString);
+            connection.Open();
+
+            var query = $"SELECT * FROM Users WHERE Id = {id}"; // ❌ Vulnerable
+            var command = new SqlCommand(query, connection);
+            var reader = command.ExecuteReader();
+
+            var users = new List<string>();
+            while (reader.Read())
+            {
+                users.Add(reader["Name"].ToString());
+            }
+
+            return Ok(users);
+        }
     }
 }
